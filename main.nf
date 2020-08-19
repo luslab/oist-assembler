@@ -15,8 +15,9 @@ Module inclusions
 -------------------------------------------------------------------------------------------------------------------------------*/
 
 include { check_max; build_debug_param_summary; luslab_header; check_params } from './luslab-modules/tools/luslab_util/main.nf' /** required **/
-include { guppy_basecaller } from './luslab-modules/tools/guppy/main.nf'
 include { fastq_metadata } from './luslab-modules/tools/metadata/main.nf'
+include { guppy_basecaller } from './luslab-modules/tools/guppy/main.nf'
+include { guppy_qc } from './luslab-modules/tools/guppy/main.nf'
 include { minionqc } from './luslab-modules/tools/minionqc/main.nf'
 include { nanoplot} from './luslab-modules/tools/nanoplot/main.nf'
 include { flye } from './luslab-modules/tools/flye/main.nf'
@@ -44,11 +45,15 @@ workflow {
 	// fastq_metadata.out.metadata | view
 	// Call bases with guppy
 	guppy_basecaller(params.modules['guppy_basecaller'], fastq_metadata.out.metadata)
+	guppy_basecaller.out.sequencing_summary | view
+	// Call pycoQC
+	guppy_qc(params.modules['guppy_qc'], guppy_basecaller.out.sequencing_summary)
+	guppy_qc.out.report | view
 	// Do some statistics on the basecalled data
-	//minionqc(fastq_metadata.out.metadata, guppy_basecaller.out.report)
-	//nanoplot(params.modules['nanoplot'], guppy_basecaller.out.fastq)
+	minionqc(params.modules['minionqc'], guppy_basecaller.out.sequencing_summary)
+	// nanoplot(params.modules['nanoplot'], guppy_basecaller.out.fastq)
 	// Do the assembly
-	flye(params.modules['flye'], guppy_basecaller.out.fastq)
+	// flye(params.modules['flye'], guppy_basecaller.out.fastq)
 }
 
 workflow.onComplete {
