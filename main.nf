@@ -48,12 +48,12 @@ workflow {
 	guppy_basecaller.out.sequencing_summary | view
 	// Call pycoQC
 	guppy_qc(params.modules['guppy_qc'], guppy_basecaller.out.sequencing_summary)
-	guppy_qc.out.report | view
+	//guppy_qc.out.report | view
 	// Do some statistics on the basecalled data
 	minionqc(params.modules['minionqc'], guppy_basecaller.out.sequencing_summary)
 	// nanoplot(params.modules['nanoplot'], guppy_basecaller.out.fastq)
 	// Do the assembly
-	// flye(params.modules['flye'], guppy_basecaller.out.fastq)
+	flye(params.modules['flye'], guppy_basecaller.out.fastq)
 }
 
 workflow.onComplete {
