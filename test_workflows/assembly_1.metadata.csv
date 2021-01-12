@@ -1,2 +1,2 @@
-sample_id,data1,genomesize
-lambda,/home/mjmansfield/Nextflow/oist-assembler/test_data/,0.05m
+sample_id,nanopore_data,genomesize
+lambda,/home/mjmansfield/Nextflow/oist-assembler/test_workflows/assembly_1_data/nanopore_ERR1883389.0.85.fastq.gz,12m
