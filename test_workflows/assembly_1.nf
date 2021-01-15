@@ -35,7 +35,6 @@ include { infernal_cmscan } from "../luslab-modules/tools/infernal/main.nf"
 include { blast_makeblastdb } from "../luslab-modules/tools/blast/main.nf"
 include { blast_blastn } from "../luslab-modules/tools/blast/main.nf"
 include { blast_asn_to_tab } from "../luslab-modules/tools/blast/main.nf"
-include { blast_blastn } from "../luslab-modules/tools/blast/main.nf"
 include { mafft } from "../luslab-modules/tools/mafft/main.nf"
 include { emboss_seqret } from "../luslab-modules/tools/emboss/main.nf"
 include { phyml } from "../luslab-modules/tools/phyml/main.nf"
@@ -71,9 +70,40 @@ Main workflow
 
 // Run workflow
 workflow {
-    // Collect metadata
+    // Collect metadata.
+    // The metadata reads in a .csv file, which is structured to contain a "data1" column corresponding
+    // to the nanopore reads, and then any number of additional labeled features beyond the first column.
     fastq_metadata(params.input)
-    // Do some statistics on the basecalled data
+
+    // Separate out the various data from the metadata header
+    ch_illumina = fastq_metadata.out
+        .map { row -> [ [sample_id:row[0].sample_id], row[0].illumina1, row[0].illumina2] }
+    genome_size = fastq_metadata.out
+        .map { row -> row[0].genome_size}
+    augustus_model = fastq_metadata.out
+        .map { row -> row[0].ref_augustus_model }
+    repeat_library = fastq_metadata.out
+        .map { row -> row[0].ref_repeat_library }
+    rna_library = fastq_metadata.out
+        .map { row -> row[0].ref_rna_library }
+    ref_genome_library = fastq_metadata.out
+        .map { row -> row[0].ref_genome_library }
+    // Enumerate the genomes in the reference_genome_library directory
+    Channel
+        .fromPath ( ref_genome_library )
+        .splitCsv(header:true)
+        .map { row -> processRow(row) }
+        .map { row -> listFiles(row, '*.fa')}
+        .flatMap { row -> enumerateFastqDir(row) }
+        .set {whatever}
+   whatever.view()
+    ref_marker_gene_library = fastq_metadata.out
+        .map { row -> row[0].ref_marker_gene_library }
+
+
+    // Do some statistics on the input reads
+    //minionqc(params.modules["minionqc"], fastq_metadata.out.metadata)
+
     //minionqc(params.modules["minionqc"], guppy_basecaller.out.sequencing_summary)
     // Do the assembly
     //flye(params.modules["flye"], guppy_basecaller.out.fastq)
