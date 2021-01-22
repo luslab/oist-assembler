@@ -98,7 +98,7 @@ workflow {
 
     //minionqc(params.modules["minionqc"], guppy_basecaller.out.sequencing_summary)
     // Do the assembly
-    //flye(params.modules["flye"], guppy_basecaller.out.fastq)
+    flye(params.modules["flye"], fastq_metadata.out)
 }
 
 workflow.onError {
