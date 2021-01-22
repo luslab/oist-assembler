@@ -86,20 +86,12 @@ workflow {
         .map { row -> row[0].ref_repeat_library }
     rna_library = fastq_metadata.out
         .map { row -> row[0].ref_rna_library }
+    // Enumerate the genomes in the reference_genome_library directory
     ref_genome_library = fastq_metadata.out
         .map { row -> row[0].ref_genome_library }
-    // Enumerate the genomes in the reference_genome_library directory
-    Channel
-        .fromPath ( ref_genome_library )
-        .splitCsv(header:true)
-        .map { row -> processRow(row) }
-        .map { row -> listFiles(row, '*.fa')}
-        .flatMap { row -> enumerateFastqDir(row) }
-        .set {whatever}
-   whatever.view()
+        .map { dir -> file(dir).listFiles() }
     ref_marker_gene_library = fastq_metadata.out
         .map { row -> row[0].ref_marker_gene_library }
-
 
     // Do some statistics on the input reads
     //minionqc(params.modules["minionqc"], fastq_metadata.out.metadata)
