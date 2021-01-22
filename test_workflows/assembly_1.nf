@@ -99,6 +99,8 @@ workflow {
     //minionqc(params.modules["minionqc"], guppy_basecaller.out.sequencing_summary)
     // Do the assembly
     flye(params.modules["flye"], fastq_metadata.out)
+    // Remap the reads on the assembly
+    minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
 }
 
 workflow.onError {
