@@ -108,6 +108,10 @@ workflow {
     // Index the assembly
     last_db(params.modules["last_db"], flye.out.fasta)
     blast_makeblastdb(params.modules["blast_makeblastdb"], flye.out.fasta)
+    // Polish with Racon
+    justMinimapPaf = minimap2_paf.out.paf.map { row -> row[1] }
+    justFlyeAssembly = flye.out.fasta.map { row -> row[1] }
+    racon(params.modules["racon"], fastq_metadata.out, justMinimapPaf, justFlyeAssembly)
 }
 
 workflow.onError {
