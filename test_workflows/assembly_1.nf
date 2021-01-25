@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 Pipeline run params
 -------------------------------------------------------------------------------------------------------------------------------*/
 
+params.modules.busco_genome.args = "--lineage_dataset metazoa_odb10"
 //params.modules["guppy_basecaller"].flowcell = "FLO-MIN106"
 //params.modules["guppy_basecaller"].kit = "SQK-RAD002"
 //params.modules["flye"].genome_size = "0.05m"
@@ -101,6 +102,8 @@ workflow {
     flye(params.modules["flye"], fastq_metadata.out)
     // Remap the reads on the assembly
     minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
+    // Assess the assembly
+    busco_genome(params.modules["busco_genome"], flye.out.fasta)
 }
 
 workflow.onError {
