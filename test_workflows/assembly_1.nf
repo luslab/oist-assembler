@@ -7,10 +7,12 @@ nextflow.enable.dsl=2
 Pipeline run params
 -------------------------------------------------------------------------------------------------------------------------------*/
 
+params.modules.blast_makeblastdb.dbtype = "nucl"
 params.modules.busco_genome.args = "--lineage_dataset metazoa_odb10"
 //params.modules["guppy_basecaller"].flowcell = "FLO-MIN106"
 //params.modules["guppy_basecaller"].kit = "SQK-RAD002"
 //params.modules["flye"].genome_size = "0.05m"
+params.modules.last_db.args = "-uNEAR -R01"
 
 /*-----------------------------------------------------------------------------------------------------------------------------
 Module inclusions
@@ -43,8 +45,7 @@ include { phyml } from "../luslab-modules/tools/phyml/main.nf"
 // The following lines are used to import LAST commands with reasonable presets for
 // doing the tasks laid out in the process names. The arguments of these presets are in:
 //     luslab-modules/tools/last/test/last.config
-include { last_db as last_db_genome_to_genome_distant} from "../luslab-modules/tools/last/main.nf"
-include { last_db as last_db_reads_to_genome} from "../luslab-modules/tools/last/main.nf"
+include { last_db } from "../luslab-modules/tools/last/main.nf"
 include { last_train as last_train_genome_to_genome_distant } from "../luslab-modules/tools/last/main.nf"
 include { last_train as last_train_reads_to_genome } from "../luslab-modules/tools/last/main.nf"
 include { last_align as last_align_genome_to_genome_distant } from "../luslab-modules/tools/last/main.nf"
@@ -104,6 +105,9 @@ workflow {
     minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
     // Assess the assembly
     busco_genome(params.modules["busco_genome"], flye.out.fasta)
+    // Index the assembly
+    last_db(params.modules["last_db"], flye.out.fasta)
+    blast_makeblastdb(params.modules["blast_makeblastdb"], flye.out.fasta)
 }
 
 workflow.onError {
