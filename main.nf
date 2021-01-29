@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 Pipeline run params
 -------------------------------------------------------------------------------------------------------------------------------*/
 
+
 params.modules.blast_makeblastdb.dbtype = "nucl"
 
 params.modules.busco_genome.args = "--lineage_dataset metazoa_odb10"
@@ -26,6 +27,7 @@ Module inclusions
 
 include { check_max; build_debug_param_summary; luslab_header; check_params } from "./luslab-modules/tools/luslab_util/main.nf" /** required **/
 include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
+include { filtlong } from "./luslab-modules/tools/filtlong/main.nf"
 
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
 include { porechop } from "./luslab-modules/tools/porechop/main.nf"
@@ -106,8 +108,18 @@ workflow {
     //minionqc(params.modules["minionqc"], fastq_metadata.out.metadata)
 
     //minionqc(params.modules["minionqc"], guppy_basecaller.out.sequencing_summary)
+
+    // Optionally filter the reads with filtlong
+    if (params.with_filtlong == true) {
+        params.modules.filtlong.args = "--target_bases ${params.filtlong_target} --length_weight 10"
+        filtlong(params.modules["filtlong"], fastq_metadata.out)
+        flye_input_reads = filtlong.out.fastq
+    } else {
+        flye_input_reads = fastq_metadata.out
+    }
+
     // Do the assembly
-    flye(params.modules["flye"], fastq_metadata.out)
+    flye(params.modules["flye"], flye_input_reads)
     // Remap the reads on the assembly
     minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
     // Assess the assembly
