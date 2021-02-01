@@ -32,7 +32,8 @@ include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
 include { filtlong } from "./luslab-modules/tools/filtlong/main.nf"
 
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
-include { pairwise_genome_alignment as align_to_self } from "./workflows/pairwise_genome_alignment/main.nf"
+include { pairwise_genome_alignment as align_to_self ;
+          pairwise_genome_alignment as align_to_reference } from "./workflows/pairwise_genome_alignment/main.nf"
 include { porechop } from "./luslab-modules/tools/porechop/main.nf"
 include { tantan ;
           tantan_to_GFF3 } from "./luslab-modules/tools/tantan/main.nf"
@@ -56,17 +57,7 @@ include { mafft } from "./luslab-modules/tools/mafft/main.nf"
 include { emboss_seqret } from "./luslab-modules/tools/emboss/main.nf"
 include { phyml } from "./luslab-modules/tools/phyml/main.nf"
 
-// The following lines are used to import LAST commands with reasonable presets for
-// doing the tasks laid out in the process names. The arguments of these presets are in:
-//     ./luslab-modules/tools/last/test/last.config
 include { last_db } from "./luslab-modules/tools/last/main.nf"
-include { last_train as last_train_genome_to_genome_distant } from "./luslab-modules/tools/last/main.nf"
-include { last_train as last_train_reads_to_genome } from "./luslab-modules/tools/last/main.nf"
-include { last_align as last_align_genome_to_genome_distant } from "./luslab-modules/tools/last/main.nf"
-include { last_align as last_align_reads_to_genome } from "./luslab-modules/tools/last/main.nf"
-include { last_convert_maf_to_sam } from "./luslab-modules/tools/last/main.nf"
-include { last_filter_maf as last_filter_maf_distant } from "./luslab-modules/tools/last/main.nf"
-include { last_dotplot as last_dotplot_distant } from "./luslab-modules/tools/last/main.nf"
 
 /*-----------------------------------------------------------------------------------------------------------------------------
 Init
@@ -102,10 +93,6 @@ workflow {
         .map { row -> row[0].ref_repeat_library }
     rna_library = fastq_metadata.out
         .map { row -> row[0].ref_rna_library }
-    // Enumerate the genomes in the reference_genome_library directory
-    ref_genome_library = fastq_metadata.out
-        .map { row -> row[0].ref_genome_library }
-        .map { dir -> file(dir).listFiles() }
     ref_marker_gene_library = fastq_metadata.out
         .map { row -> row[0].ref_marker_gene_library }
 
@@ -136,8 +123,16 @@ workflow {
     tantan(params.modules["tantan"], flye.out.fasta)
     tantan_to_GFF3(params.modules["tantan_to_GFF3"], tantan.out)
 
-    // Align the assembly to itself and to a reference
+    // Align the assembly to itself and optionally to a reference
     align_to_self(last_db.out, flye.out.fasta)
+    if (params.with_reference) {
+    channel
+        .from(params.with_reference)
+        .map { filename -> file(filename, checkIfExists: true) }
+        .map { row -> [[sample_id:"ref_genome"], row] }
+        .set {ch_reference}
+    align_to_reference(last_db.out, ch_reference)
+    }
 
     // Polish with Racon and assess with BUSCO
     justMinimapPaf = minimap2_paf.out.paf.map { row -> row[1] }
