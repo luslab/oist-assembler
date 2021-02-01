@@ -32,6 +32,7 @@ include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
 include { filtlong } from "./luslab-modules/tools/filtlong/main.nf"
 
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
+include { pairwise_genome_alignment as align_to_self } from "./workflows/pairwise_genome_alignment/main.nf"
 include { porechop } from "./luslab-modules/tools/porechop/main.nf"
 include { tantan ;
           tantan_to_GFF3 } from "./luslab-modules/tools/tantan/main.nf"
@@ -134,6 +135,10 @@ workflow {
     // Analyse tandem repeats in the assembly
     tantan(params.modules["tantan"], flye.out.fasta)
     tantan_to_GFF3(params.modules["tantan_to_GFF3"], tantan.out)
+
+    // Align the assembly to itself and to a reference
+    align_to_self(last_db.out, flye.out.fasta)
+
     // Polish with Racon and assess with BUSCO
     justMinimapPaf = minimap2_paf.out.paf.map { row -> row[1] }
     justFlyeAssembly = flye.out.fasta.map { row -> row[1] }
