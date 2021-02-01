@@ -20,6 +20,8 @@ busco_genome1_opts.publish_dir = "busco1"
 //params.modules["flye"].genome_size = "0.05m"
 params.modules.last_db.args = "-uNEAR -R01"
 
+params.modules.tantan_to_GFF3.publish_dir = "tantan"
+
 /*-----------------------------------------------------------------------------------------------------------------------------
 Module inclusions
 -------------------------------------------------------------------------------------------------------------------------------*/
@@ -29,6 +31,8 @@ include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
 
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
 include { porechop } from "./luslab-modules/tools/porechop/main.nf"
+include { tantan ;
+          tantan_to_GFF3 } from "./luslab-modules/tools/tantan/main.nf"
 include { flye } from "./luslab-modules/tools/flye/main.nf"
 include { racon } from "./luslab-modules/tools/racon/main.nf"
 include { purge_haplotigs } from "./luslab-modules/tools/purge_haplotigs/main.nf"
@@ -115,6 +119,9 @@ workflow {
     // Index the assembly
     last_db(params.modules["last_db"], flye.out.fasta)
     blast_makeblastdb(params.modules["blast_makeblastdb"], flye.out.fasta)
+    // Analyse tandem repeats in the assembly
+    tantan(params.modules["tantan"], flye.out.fasta)
+    tantan_to_GFF3(params.modules["tantan_to_GFF3"], tantan.out)
     // Polish with Racon and assess with BUSCO
     justMinimapPaf = minimap2_paf.out.paf.map { row -> row[1] }
     justFlyeAssembly = flye.out.fasta.map { row -> row[1] }
