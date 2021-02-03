@@ -115,7 +115,7 @@ workflow {
 
     // Optionally filter the reads with filtlong
     if (params.with_filtlong == true) {
-        params.modules.filtlong.args = "--target_bases ${params.filtlong_target} --length_weight 10"
+        params.modules.filtlong.args = "--target_bases ${params.filtlong_target}"
         filtlong(params.modules["filtlong"], fastq_metadata.out)
         flye_input_reads = filtlong.out.fastq
     } else {
