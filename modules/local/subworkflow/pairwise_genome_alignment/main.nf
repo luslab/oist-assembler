@@ -6,7 +6,7 @@ include { last_train ;
           last_align ;
           last_filter_macatf ;
           last_dotplot as last_dotplot_many2many ;
-          last_dotplot as last_dotplot_one2one   } from "../../../luslab-modules/tools/last/main.nf"
+          last_dotplot as last_dotplot_one2one   } from "../../../../luslab-nf-modules/tools/last/main.nf"
 
 def last_train_opts                        = params.modules.last_train.clone()
 def last_align_opts                        = params.modules.last_align.clone()
