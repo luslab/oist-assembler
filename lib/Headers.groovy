@@ -25,45 +25,6 @@ class Headers {
         return "-${colors.dim}----------------------------------------------------${colors.reset}-"
     }
 
-    static String oist_logo(workflow, monochrome_logs) {
-        Map colors = log_colours(monochrome_logs)
-        String.format(
-        """
-        ${dashed_line(monochrome_logs)}
-
-        ${colors.red}
-
-                           -
-                           `:
-                `..`        `:
-                /  `..-`     /  ``
-                -.     .-`  `: :..--   -.-`
-                 /   -..-/ `/--.  -. `:`  -.
-                 -.  :```.-- ```` -.-- `...-
-                `:`   ....  :..:/-     -...-`
-                /`    ````` / ${colors.white}`:./${colors.red}-.````${colors.white}..${colors.red}`--
-              ``.:. .-.....--:.` -:/--:-${colors.white}/-+`${colors.red}
-         ````-:````.- :.`-....--.-`.: .:${colors.white}+${colors.red}:${colors.white}`${colors.red}      .-
-     `.-.````.--.  -. -.``....-...--.`:.- ``....-.
-     ``         :`  :` ````${colors.white}---${colors.red}``.......${colors.white}: -${colors.red}.```
-          ```...-   `.......-........- ${colors.white}:-${colors.red}.
-         .-```    `       `````     .:`
-         `:     --`:   `..`     ..`--`
-          `-...-`  /  --``:`   :`-. `:
-            ```    /.-`   :/.:`-.`-.-`
-                    `     /` /  /
-                          /  -..:
-                          :`
-                           :.
-                            ``
-
-        ${colors.reset}
-        ${workflow.manifest.name} v${workflow.manifest.version}${colors.reset}
-        ${dashed_line(monochrome_logs)}
-        """.stripIndent()
-        )
-    }
-
     static String nf_core(workflow, monochrome_logs) {
         Map colors = log_colours(monochrome_logs)
         String.format(
