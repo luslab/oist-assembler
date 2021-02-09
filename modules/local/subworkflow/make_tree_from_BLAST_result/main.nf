@@ -3,11 +3,17 @@
 // Specify DSL2
 nextflow.enable.dsl=2
 
-include { samtools_sort } from '../../luslab-modules/tools/samtools/main.nf'
-include { samtools_index } from '../../tools/samtools/main.nf'
+include { blast_makeblastdb } from '../../../luslab-nf-modules/tools/blast/main.nf'
+include { blast_blastn } from '../../../luslab-nf-modules/tools/blast/main.nf'
+include { blast_asn_to_tab } from '../../../luslab-nf-modules/tools/blast/main.nf'
+include { subset_fasta_by_BLAST_results } from '../../process/subset_fasta_by_BLAST_results.nf'
+include { cdhit_nucl } from '../../../luslab-nf-modules/tools/cdhit/main.nf'
+include { }
 
 workflow sort_index_bam {
-    take: tuple_meta_bam
+    take: tuple_meta_fasta
+    take:
+
     main:
         // def modules {
         //     'samtools_sort' {
