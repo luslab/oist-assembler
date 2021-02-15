@@ -30,7 +30,7 @@ Module inclusions
 include { check_max; build_debug_param_summary; luslab_header; check_params } from "./luslab-modules/tools/luslab_util/main.nf" /** required **/
 include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
 include { filtlong } from "./luslab-modules/tools/filtlong/main.nf"
-
+include { map_reads_uniquely_to_genome } from "./workflows/map_reads_uniquely_to_genome/main.nf"
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
 include { pairwise_genome_alignment as align_to_self ;
           pairwise_genome_alignment as align_to_reference } from "./workflows/pairwise_genome_alignment/main.nf"
@@ -112,13 +112,17 @@ workflow {
 
     // Do the assembly
     flye(params.modules["flye"], flye_input_reads)
-    // Remap the reads on the assembly
-    minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
-    // Assess the assembly
-    busco_genome0(busco_genome0_opts, flye.out.fasta)
+
     // Index the assembly
     last_db(params.modules["last_db"], flye.out.fasta)
     blast_makeblastdb(params.modules["blast_makeblastdb"], flye.out.fasta)
+
+    // Remap the reads on the assembly
+    minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
+    map_reads_uniquely_to_genome(last_db.out, fastq_metadata.out)
+
+    // Assess the assembly
+    busco_genome0(busco_genome0_opts, flye.out.fasta)
     // Analyse tandem repeats in the assembly
     tantan(params.modules["tantan"], flye.out.fasta)
     tantan_to_GFF3(params.modules["tantan_to_GFF3"], tantan.out)
