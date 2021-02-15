@@ -35,5 +35,5 @@ workflow map_reads_uniquely_to_genome {
             last_filter_maf_opts,
             last_align.out.maf)
     emit:
-        last_filter_maf.out.maf
+        maf = last_filter_maf.out.maf
 }

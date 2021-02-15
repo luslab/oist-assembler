@@ -18,6 +18,10 @@ busco_genome0p_opts.publish_dir = "busco0p"
 def busco_genome1_opts = params.modules.busco_genome.clone()
 busco_genome1_opts.publish_dir = "busco1"
 
+def filter_mapped_reads_opts = params.modules.last_filter_maf.clone()
+filter_mapped_reads_opts.publish_dir = "filtered_reads"
+
+
 def minimap2_paf_flye_opts = params.modules.minimap2_paf.clone()
 minimap2_paf_flye_opts.publish_dir = "minimap2_paf_flye"
 def minimap2_paf_purged_opts = params.modules.minimap2_paf.clone()
@@ -36,6 +40,7 @@ Module inclusions
 
 include { check_max; build_debug_param_summary; luslab_header; check_params } from "./luslab-modules/tools/luslab_util/main.nf" /** required **/
 include { fastq_metadata } from "./luslab-modules/tools/metadata/main.nf"
+include { filter_mapped_reads } from "./workflows/filter_mapped_reads/main.nf"
 include { filtlong } from "./luslab-modules/tools/filtlong/main.nf"
 include { map_reads_uniquely_to_genome } from "./workflows/map_reads_uniquely_to_genome/main.nf"
 include { minionqc } from "./luslab-modules/tools/minionqc/main.nf"
@@ -131,14 +136,14 @@ workflow {
     blast_makeblastdb(params.modules["blast_makeblastdb"], flye.out.fasta)
 
     // Remap the reads on the assembly
-    minimap2_paf(params.modules["minimap2_paf"], flye.out.fasta, fastq_metadata.out)
+    minimap2_paf_flye(minimap2_paf_flye_opts, flye.out.fasta, fastq_metadata.out)
     map_reads_uniquely_to_genome(last_db.out, fastq_metadata.out)
 
     // Assess the assembly
     busco_genome0(busco_genome0_opts, flye.out.fasta)
 
     // Optionally purge duplicates and assess the result
-    if (params.with_purge_dups == true) {
+    if (params.with_purge_dups == true | params.with_purge_reads == true) {
         purge_dups(params.modules["purge_dups"], flye.out.fasta, minimap2_paf_flye.out.paf)
         genome_assembly = purge_dups.out.purged_fasta
         busco_genome0p(busco_genome0p_opts, genome_assembly)
@@ -147,6 +152,13 @@ workflow {
     } else {
         genome_assembly = flye.out.fasta
         minimapped_reads = minimap2_paf_flye
+    }
+
+    if (params.with_purge_reads == true) {
+        filter_mapped_reads(filter_mapped_reads_opts,
+                            purge_dups.out.bed,
+                            map_reads_uniquely_to_genome.out.maf,
+                            fastq_metadata.out)
     }
 
     // Analyse tandem repeats in the assembly
