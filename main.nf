@@ -13,8 +13,15 @@ params.modules.blast_makeblastdb.dbtype = "nucl"
 params.modules.busco_genome.args = "--lineage_dataset metazoa_odb10"
 def busco_genome0_opts = params.modules.busco_genome.clone()
 busco_genome0_opts.publish_dir = "busco0"
+def busco_genome0p_opts = params.modules.busco_genome.clone()
+busco_genome0p_opts.publish_dir = "busco0p"
 def busco_genome1_opts = params.modules.busco_genome.clone()
 busco_genome1_opts.publish_dir = "busco1"
+
+def minimap2_paf_flye_opts = params.modules.minimap2_paf.clone()
+minimap2_paf_flye_opts.publish_dir = "minimap2_paf_flye"
+def minimap2_paf_purged_opts = params.modules.minimap2_paf.clone()
+minimap2_paf_purged_opts.publish_dir = "minimap2_paf_purged"
 
 //params.modules["guppy_basecaller"].flowcell = "FLO-MIN106"
 //params.modules["guppy_basecaller"].kit = "SQK-RAD002"
@@ -40,14 +47,17 @@ include { tantan ;
 include { flye } from "./luslab-modules/tools/flye/main.nf"
 include { racon } from "./luslab-modules/tools/racon/main.nf"
 include { purge_haplotigs } from "./luslab-modules/tools/purge_haplotigs/main.nf"
+include { purge_dups } from "./luslab-modules/tools/purge_dups/main.nf"
 include { repeatmodeler_database } from "./luslab-modules/tools/repeatmodeler/main.nf"
 include { repeatmodeler_model } from "./luslab-modules/tools/repeatmodeler/main.nf"
 include { repeatmasker } from "./luslab-modules/tools/repeatmodeler/main.nf"
-include { minimap2_index } from "./luslab-modules/tools/minimap2/main.nf"
-include { minimap2_paf} from "./luslab-modules/tools/minimap2/main.nf"
-include { minimap2_sam } from "./luslab-modules/tools/minimap2/main.nf"
-include { busco_genome as busco_genome0 } from "./luslab-modules/tools/busco/main.nf"
-include { busco_genome as busco_genome1 } from "./luslab-modules/tools/busco/main.nf"
+include { minimap2_index                      ;
+          minimap2_paf as minimap2_paf_flye   ;
+          minimap2_paf as minimap2_paf_purged ;
+          minimap2_sam                        } from "./luslab-modules/tools/minimap2/main.nf"
+include { busco_genome as busco_genome0  ;
+          busco_genome as busco_genome0p ;
+          busco_genome as busco_genome1  } from "./luslab-modules/tools/busco/main.nf"
 include { augustus_run_custom } from "./luslab-modules/tools/augustus/main.nf"
 include { infernal_cmscan } from "./luslab-modules/tools/infernal/main.nf"
 include { blast_makeblastdb } from "./luslab-modules/tools/blast/main.nf"
@@ -111,6 +121,9 @@ workflow {
     }
 
     // Do the assembly
+    if (params.with_purge_dups == true) {
+        params.modules.flye.args += " --keep-haplotypes"
+    }
     flye(params.modules["flye"], flye_input_reads)
 
     // Index the assembly
@@ -123,12 +136,25 @@ workflow {
 
     // Assess the assembly
     busco_genome0(busco_genome0_opts, flye.out.fasta)
+
+    // Optionally purge duplicates and assess the result
+    if (params.with_purge_dups == true) {
+        purge_dups(params.modules["purge_dups"], flye.out.fasta, minimap2_paf_flye.out.paf)
+        genome_assembly = purge_dups.out.purged_fasta
+        busco_genome0p(busco_genome0p_opts, genome_assembly)
+        minimap2_paf_purged(minimap2_paf_purged_opts, genome_assembly, fastq_metadata.out)
+        minimapped_reads = minimap2_paf_purged
+    } else {
+        genome_assembly = flye.out.fasta
+        minimapped_reads = minimap2_paf_flye
+    }
+
     // Analyse tandem repeats in the assembly
-    tantan(params.modules["tantan"], flye.out.fasta)
+    tantan(params.modules["tantan"], genome_assembly)
     tantan_to_GFF3(params.modules["tantan_to_GFF3"], tantan.out)
 
     // Align the assembly to itself and optionally to a reference
-    align_to_self(last_db.out, flye.out.fasta)
+    align_to_self(last_db.out, genome_assembly)
     if (params.with_reference) {
     channel
         .from(params.with_reference)
@@ -139,10 +165,10 @@ workflow {
     }
 
     // Polish with Racon and assess with BUSCO
-    justMinimapPaf = minimap2_paf.out.paf.map { row -> row[1] }
-    justFlyeAssembly = flye.out.fasta.map { row -> row[1] }
-    racon(params.modules["racon"], fastq_metadata.out, justMinimapPaf, justFlyeAssembly)
-    busco_genome1(busco_genome1_opts, flye.out.fasta)
+    justMinimapPaf = minimapped_reads.out.paf.map { row -> row[1] }
+    justAssembly = genome_assembly.map { row -> row[1] }
+    racon(params.modules["racon"], fastq_metadata.out, justMinimapPaf, justAssembly)
+    busco_genome1(busco_genome1_opts, genome_assembly)
 }
 
 workflow.onError {
