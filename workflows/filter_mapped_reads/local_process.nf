@@ -35,7 +35,7 @@ process filter_mapped_reads {
         }
 
         // List removed scaffolds
-        make_grep_exprs  = "grep HAP\$ ${dups} | cut -f 1 | sed 's/\$/\$/' > scaf_rem.txt"
+        make_grep_exprs  = "grep HAPLOTIG ${dups} | cut -f 1 | sed 's/\$/\$/' > scaf_rem.txt"
         // List reads matching removed scaffolds
         make_read_list   = "maf-convert sam ${filtered_alignment} | sed 1d | cut -f 1,3 | grep -f scaf_rem.txt | cut -f 1 | uniq > reads_rem.txt"
         // Functions to convert FASTQ to and from one-line intermediary format.
