@@ -38,5 +38,5 @@ opts.publish_dir = "filtered_reads"
 workflow {
     last_db(params.modules.last_db, ch_genome)
     map_reads_uniquely_to_genome(last_db.out, ch_reads)
-    filter_mapped_reads(opts, ch_dups, map_reads_uniquely_to_genome.out.maf, ch_reads)
+    filter_mapped_reads(opts, ch_dups, map_reads_uniquely_to_genome.out.tab, ch_reads)
 }

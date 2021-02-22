@@ -16,7 +16,7 @@ process filter_mapped_reads {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1060--h8b12597_0"
+    container "ubuntu:20.10"
 
     input:
         val opts
@@ -37,7 +37,7 @@ process filter_mapped_reads {
         // List removed scaffolds
         make_grep_exprs  = "grep HAPLOTIG ${dups} | cut -f 1 | sed 's/\$/\$/' > scaf_rem.txt"
         // List reads matching removed scaffolds
-        make_read_list   = "maf-convert sam ${filtered_alignment} | sed 1d | cut -f 1,3 | grep -f scaf_rem.txt | cut -f 1 | uniq > reads_rem.txt"
+        make_read_list   = "awk '{print \$7, \$2}' ${filtered_alignment} | grep -f scaf_rem.txt | cut -f 1 -d' ' | cut -f 1 | uniq > reads_rem.txt"
         // Functions to convert FASTQ to and from one-line intermediary format.
         to_one_line      = "toOneLine() { paste <(sed -n 1~4p \$1) <(sed -n 2~4p \$1) <(sed -n 3~4p \$1) <(sed -n 4~4p \$1) ; }"
         to_four_lines    = "toFourLines() { sed 's/\\t/\\n/g' ; }"
