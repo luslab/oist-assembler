@@ -157,7 +157,7 @@ workflow {
     if (params.with_purge_reads == true) {
         filter_mapped_reads(filter_mapped_reads_opts,
                             purge_dups.out.bed,
-                            map_reads_uniquely_to_genome.out.maf,
+                            map_reads_uniquely_to_genome.out.tab,
                             fastq_metadata.out)
     }
 
