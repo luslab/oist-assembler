@@ -125,10 +125,6 @@ workflow {
         flye_input_reads = fastq_metadata.out
     }
 
-    // Do the assembly
-    if (params.with_purge_dups == true) {
-        params.modules.flye.args += " --keep-haplotypes"
-    }
     flye(params.modules["flye"], flye_input_reads)
 
     // Index the assembly
