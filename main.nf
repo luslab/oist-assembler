@@ -133,8 +133,9 @@ workflow {
 
     // Remap the reads on the assembly
     minimap2_paf_flye(minimap2_paf_flye_opts, flye.out.fasta, fastq_metadata.out)
-    map_reads_uniquely_to_genome(last_db.out, fastq_metadata.out)
-
+    if ( params.with_remap_reads == true | params.with_purge_reads == true ) {
+        map_reads_uniquely_to_genome(last_db.out, fastq_metadata.out)
+    }
     // Assess the assembly
     busco_genome0(busco_genome0_opts, flye.out.fasta)
 
