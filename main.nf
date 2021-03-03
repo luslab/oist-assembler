@@ -33,7 +33,7 @@ include { filtlong } from "./modules/luslab-nf-modules/tools/filtlong/main.nf"
 
 include { minionqc } from "./modules/luslab-nf-modules/tools/minionqc/main.nf"
 include { pairwise_genome_alignment as align_to_self ;
-          pairwise_genome_alignment as align_to_reference } from "./modules/local/submodule/pairwise_genome_alignment/main.nf"
+          pairwise_genome_alignment as align_to_reference } from "./modules/local/subworkflow/pairwise_genome_alignment/main.nf"
 include { porechop } from "./modules/luslab-nf-modules/tools/porechop/main.nf"
 include { tantan ;
           tantan_to_GFF3 } from "./modules/luslab-nf-modules/tools/tantan/main.nf"
