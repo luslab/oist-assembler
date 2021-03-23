@@ -32,7 +32,7 @@ channel
     .map { row -> [ row[0], file(row[1], checkIfExists: true) ] }
     .set {ch_reads}
 
-def opts = params.modules.last_filter_maf.clone()
+def opts = params.modules.last_filter_one_to_one.clone()
 opts.publish_dir = "filtered_reads"
 
 workflow {

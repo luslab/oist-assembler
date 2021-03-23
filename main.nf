@@ -18,7 +18,7 @@ busco_genome0p_opts.publish_dir = "busco0p"
 def busco_genome1_opts = params.modules.busco_genome.clone()
 busco_genome1_opts.publish_dir = "busco1"
 
-def filter_mapped_reads_opts = params.modules.last_filter_maf.clone()
+def filter_mapped_reads_opts = params.modules.last_filter_one_to_one.clone()
 filter_mapped_reads_opts.publish_dir = "filtered_reads"
 
 

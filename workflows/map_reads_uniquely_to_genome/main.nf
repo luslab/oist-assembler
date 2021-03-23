@@ -4,8 +4,8 @@ nextflow.enable.dsl=2
 
 include { last_train ;
           last_align ;
+          last_filter_one_to_many as last_filter_maf ;
           last_convert_maf } from "../../luslab-modules/tools/last/main.nf"
-include { last_filter_one_to_many as last_filter_maf } from "./local_process.nf"
 
 def last_train_opts                        = params.modules.last_train.clone()
 def last_align_opts                        = params.modules.last_align.clone()

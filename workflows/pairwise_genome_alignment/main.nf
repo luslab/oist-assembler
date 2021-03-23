@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 include { last_train ;
           last_align ;
-          last_filter_maf ;
+          last_filter_one_to_one as last_filter_maf ;
           last_dotplot as last_dotplot_many2many ;
           last_dotplot as last_dotplot_one2one   } from "../../luslab-modules/tools/last/main.nf"
 
