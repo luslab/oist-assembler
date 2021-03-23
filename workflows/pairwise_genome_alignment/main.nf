@@ -10,7 +10,7 @@ include { last_train ;
 
 def last_train_opts                        = params.modules.last_train.clone()
 def last_align_opts                        = params.modules.last_align.clone()
-def last_filter_maf_opts                   = params.modules.last_filter_maf.clone()
+def last_filter_maf_opts                   = params.modules.last_filter_one_to_one.clone()
 def last_dotplot_opts_many2many            = params.modules.last_dotplot.clone()
 def last_dotplot_opts_one2one              = params.modules.last_dotplot.clone()
 

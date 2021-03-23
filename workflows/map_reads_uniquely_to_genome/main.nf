@@ -9,7 +9,7 @@ include { last_train ;
 
 def last_train_opts                        = params.modules.last_train.clone()
 def last_align_opts                        = params.modules.last_align.clone()
-def last_filter_maf_opts                   = params.modules.last_filter_maf.clone()
+def last_filter_maf_opts                   = params.modules.last_filter_one_to_many.clone()
 def last_convert_maf_opts                  = params.modules.last_convert_maf.clone()
 
 last_train_opts.args                       += "-Q0"
