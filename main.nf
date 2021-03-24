@@ -174,9 +174,7 @@ workflow {
     }
 
     // Polish with Racon and assess with BUSCO
-    justMinimapPaf = minimapped_reads.out.paf.map { row -> row[1] }
-    justAssembly = genome_assembly.map { row -> row[1] }
-    racon(params.modules["racon"], fastq_metadata.out, justMinimapPaf, justAssembly)
+    racon(params.modules["racon"], fastq_metadata.out, minimapped_reads.out.paf, genome_assembly)
     busco_genome1(busco_genome1_opts, genome_assembly)
 }
 
