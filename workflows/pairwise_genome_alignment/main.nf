@@ -19,6 +19,7 @@ def last_dotplot_opts_one2one              = params.modules.last_dotplot.clone()
 last_train_opts.publish_dir                = "pair_align/align"
 last_align_opts.publish_dir                = "pair_align/align"
 last_filter_maf_opts.publish_dir           = "pair_align/align"
+last_convert_maf_opts.publish_dir          = "pair_align/align"
 last_convert_maf_opts.suffix               = "gff"
 last_convert_maf_opts.args                 = "-J 2e5"
 last_dotplot_opts_many2many.publish_dir    = "pair_align/plotMany2Many"
