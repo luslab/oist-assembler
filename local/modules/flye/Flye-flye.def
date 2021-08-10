@@ -4,7 +4,7 @@ From: debian:stable
 %post
     apt -y update
     apt -y install locales # Multilingual support
-    DEBIAN_FRONTEND=noninteractive apt -y install wget build-essential zlib1g-dev python3-setuptools
+    DEBIAN_FRONTEND=noninteractive apt -y install wget procps build-essential zlib1g-dev python3-setuptools
     wget https://codeload.github.com/fenderglass/Flye/tar.gz/flye
     tar xvfz flye
     (cd Flye-flye && make && python3 setup.py install)
