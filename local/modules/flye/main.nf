@@ -18,7 +18,7 @@ process flye {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "file://local/modules/flye/Flye-flye.2.8.3-b1763.sif"
+    container "https://www.dropbox.com/s/mpzgq5mqjtf31gm/Flye-flye.2.8.3-b1763.sif?dl=1"
 
     input:
         val opts
