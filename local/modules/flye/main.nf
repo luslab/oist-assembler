@@ -18,7 +18,7 @@ process flye {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/flye:2.8.3--py38h1c8e9b9_0"
+    container "file://local/modules/flye/Flye-flye.2.8.3-b1763.sif"
 
     input:
         val opts
@@ -39,9 +39,13 @@ process flye {
     }
 
     //Build the command line options
+    // For the extra params, see
+    //     https://github.com/fenderglass/Flye/issues/397#issuecomment-869095257
+    //     https://github.com/fenderglass/Flye/issues/363#issuecomment-792533738
     flye_command = "flye $args --genome-size ${opts.genome_size} \
 			--threads ${task.cpus} \
 			--out-dir ${meta.sample_id} \
+                        --extra-params assemble_ovlp_divergence=0.05,repeat_graph_ovlp_divergence=0.05,read_align_ovlp_divergence=0.05,max_bubble_length=300000\
 			--nano-raw $reads"
 
 	//SHELL
