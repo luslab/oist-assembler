@@ -49,7 +49,7 @@ include { pairwise_genome_alignment as align_to_self ;
 include { porechop } from "./luslab-modules/tools/porechop/main.nf"
 include { tantan ;
           tantan_to_GFF3 } from "./luslab-modules/tools/tantan/main.nf"
-include { flye } from "./luslab-modules/tools/flye/main.nf"
+include { flye } from "./local/modules/flye/main.nf"
 include { racon } from "./luslab-modules/tools/racon/main.nf"
 include { purge_haplotigs } from "./luslab-modules/tools/purge_haplotigs/main.nf"
 include { purge_dups } from "./luslab-modules/tools/purge_dups/main.nf"
