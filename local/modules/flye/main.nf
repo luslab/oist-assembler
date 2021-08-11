@@ -42,7 +42,7 @@ process flye {
     flye_command = "flye $args --genome-size ${opts.genome_size} \
 			--threads ${task.cpus} \
 			--out-dir ${meta.sample_id} \
-			--nano-raw $reads"
+			--nano-corr $reads"
 
 	//SHELL
     """
