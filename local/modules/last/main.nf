@@ -16,7 +16,7 @@ process last_db {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
