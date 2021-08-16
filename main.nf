@@ -30,7 +30,7 @@ minimap2_paf_purged_opts.publish_dir = "minimap2_paf_purged"
 //params.modules["guppy_basecaller"].flowcell = "FLO-MIN106"
 //params.modules["guppy_basecaller"].kit = "SQK-RAD002"
 //params.modules["flye"].genome_size = "0.05m"
-params.modules.last_db.args = "-uNEAR -R01"
+params.modules.last_db.args = "-uRY32 -R01"
 
 params.modules.tantan_to_GFF3.publish_dir = "tantan"
 
