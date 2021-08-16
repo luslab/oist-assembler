@@ -12,9 +12,10 @@ def last_align_opts                        = params.modules.last_align.clone()
 def last_filter_maf_opts                   = params.modules.last_filter_one_to_many.clone()
 def last_convert_maf_opts                  = params.modules.last_convert_maf.clone()
 
-last_train_opts.args                       += "-Q0"
-last_align_opts.args                       += "-Q0"
+last_train_opts.args                       += "-Q0 --revsym"
+last_align_opts.args                       += "-Q0 -E0.05 -C2"
 last_convert_maf_opts.args                 += "--noheader"
+last_filter_maf_opts                       += "-m1e-5"
 
 last_convert_maf_opts.suffix               = "tab"
 
