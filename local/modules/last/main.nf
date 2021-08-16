@@ -58,7 +58,7 @@ process last_train {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
@@ -101,7 +101,7 @@ process last_align {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
@@ -151,7 +151,7 @@ process last_filter_one_to_one {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
@@ -199,7 +199,7 @@ process last_filter_one_to_many {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
@@ -241,7 +241,7 @@ process last_convert_maf {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
@@ -283,7 +283,7 @@ process last_dotplot {
                       if (opts.publish_results == "none") null
                       else filename }
 
-    container "quay.io/biocontainers/last:1186--h8b12597_0"
+    container "quay.io/biocontainers/last:1256--h2e03b76_0"
 
     input:
         val opts
