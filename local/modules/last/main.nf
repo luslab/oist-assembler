@@ -215,7 +215,7 @@ process last_filter_one_to_many {
             args += ext_args.trim()
         }
 
-        last_filter_one_to_many_command = "last-split ${unfiltered_maf} > ${unfiltered_maf.simpleName}.one-to-many.maf"
+        last_filter_one_to_many_command = "last-split $args ${unfiltered_maf} > ${unfiltered_maf.simpleName}.one-to-many.maf"
 
         if (params.verbose){
             println ("[MODULE] LAST one-to-many filter command: " + last_filter_one_to_many_command)
