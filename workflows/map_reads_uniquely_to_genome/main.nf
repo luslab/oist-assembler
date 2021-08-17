@@ -15,7 +15,7 @@ def last_convert_maf_opts                  = params.modules.last_convert_maf.clo
 last_train_opts.args                       += "-Q0 --revsym"
 last_align_opts.args                       += "-Q0 -E0.05 -C2"
 last_convert_maf_opts.args                 += "--noheader"
-last_filter_maf_opts.args                  += "-m1e-20"
+last_filter_maf_opts.args                  += "-m1e-10"
 
 last_convert_maf_opts.suffix               = "tab"
 
