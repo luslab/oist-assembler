@@ -175,7 +175,7 @@ workflow {
 
     // Polish with Racon and assess with BUSCO
     racon(params.modules["racon"], fastq_metadata.out, minimapped_reads.out.paf, genome_assembly)
-    busco_genome1(busco_genome1_opts, genome_assembly)
+    busco_genome1(busco_genome1_opts, racon.out.fasta)
 }
 
 workflow.onError {
